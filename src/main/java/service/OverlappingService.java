@@ -6,7 +6,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 
@@ -20,7 +20,7 @@ public class OverlappingService {
     @PersistenceContext(unitName = "agendaUnit")
     EntityManager entityManager;
 
-    public Response checkIfDatesOverlap(Timestamp startMillisDate, Timestamp endMillisDate) {
+    public Response checkIfDatesOverlap(Date startMillisDate, Date endMillisDate) {
         if (startMillisDate.after(endMillisDate) || startMillisDate.equals(endMillisDate)) {
             return Response.failure(START_AFTER_END);
         }

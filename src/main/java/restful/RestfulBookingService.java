@@ -1,15 +1,12 @@
 package restful;
 
 import model.booking.Booking;
-import service.Response;
-import service.BookingService;
-import service.OverlappingService;
-import service.RetrieveBookingsService;
-
+import model.user.User;
+import service.*;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Path("/date")
 public class RestfulBookingService {
@@ -23,18 +20,19 @@ public class RestfulBookingService {
     @EJB
     private RetrieveBookingsService retrieveBookingsService;
 
-    //TODO timestamp da fare dentro i service e controllare numberformat exception
+    @EJB
+    private RegistrationService registrationService;
+
     @GET
     @Path("/overlapping")
     @Produces(MediaType.APPLICATION_JSON)
     public Response overlap(@QueryParam("startDate") String startDate,
                             @QueryParam("endDate") String endDate) {
 
-        Timestamp startMillisDate = new Timestamp(Long.valueOf(startDate));
-        Timestamp endMillisDate = new Timestamp(Long.valueOf(endDate));
+        Date startMillisDate = new Date(Long.valueOf(startDate));
+        Date endMillisDate = new Date(Long.valueOf(endDate));
 
-        Response response = overlappingService.checkIfDatesOverlap(startMillisDate, endMillisDate);
-        return response;
+        return overlappingService.checkIfDatesOverlap(startMillisDate, endMillisDate);
     }
 
     @GET
@@ -45,13 +43,12 @@ public class RestfulBookingService {
                          @QueryParam("startDate") String startDate,
                          @QueryParam("endDate") String endDate) {
 
-        Timestamp startMillisDate = new Timestamp(Long.valueOf(startDate));
-        Timestamp endMillisDate = new Timestamp(Long.valueOf(endDate));
+        Date startMillisDate = new Date(Long.valueOf(startDate));
+        Date endMillisDate = new Date(Long.valueOf(endDate));
 
         Booking booking = new Booking(subject, description, startMillisDate, endMillisDate);
 
-        Response response = bookingService.book(booking);
-        return response;
+        return bookingService.book(booking);
     }
 
     @GET
@@ -61,17 +58,22 @@ public class RestfulBookingService {
                          @QueryParam("month") String m,
                          @QueryParam("year") String y) {
 
-        Response response = retrieveBookingsService.retrieve(d, m, y);
-        return response;
+        return retrieveBookingsService.retrieve(d, m, y);
     }
 
     @GET
-    @Path("/retrieveall")
+    @Path("/retrieveAll")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retrieveall() {
+    public Response retrieveAll() {
+        return retrieveBookingsService.retrieveAll();
+    }
 
-        Response response = retrieveBookingsService.retrieveAll();
-        return response;
+    @POST
+    @Path("/register")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response register(User user) {
+        return registrationService.register(user);
     }
 
 }

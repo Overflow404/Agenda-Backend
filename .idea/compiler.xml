@@ -15,7 +15,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Agenda" target="8" />
+      <module name="Agenda" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

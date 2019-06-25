@@ -12,6 +12,10 @@ public class Response<T> {
     static final String BUSY_SLOT = "This slot is busy!";
     static final String START_AFTER_END = "End time must be greater than start time!";
     static final String FREE_SLOT = "This slot is free!";
+    static final String NULL_DATA = "Registration data cannot be null!";
+    static final String EMPTY_DATA = "Registration data cannot be empty!";
+    static final String ALREADY_REGISTERED = "User already registered!";
+    static final String SUCCESS_REGISTRATION = "User registered!";
 
     private Result result;
     private T content;

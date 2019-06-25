@@ -13,9 +13,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.TimeZone;
 
-public class EndToEndBookingServiceStressIT {
+public class EndToEndBookingServiceIT {
 
     /*
     * Effects the real database.
@@ -42,7 +43,7 @@ public class EndToEndBookingServiceStressIT {
 
         }
 
-        String url1 = "http://localhost:8080/Agenda-1.0-SNAPSHOT/rest/date/retrieveall";
+        String url1 = "http://localhost:8080/Agenda-1.0-SNAPSHOT/rest/date/retrieveAll";
         HttpGet request = new HttpGet(url1);
         HttpResponse response = client.execute(request);
 
@@ -70,8 +71,8 @@ public class EndToEndBookingServiceStressIT {
     }
 
     private String generateRandomUrl() {
-        Timestamp randomStart = randomDate();
-        Timestamp randomEnd = new Timestamp(DateUtils.addMilliseconds(randomStart, 1).getTime());
+        Date randomStart = randomDate();
+        Date randomEnd = new Date(DateUtils.addMilliseconds(randomStart, 1).getTime());
 
         return "http://localhost:8080/Agenda-1.0-SNAPSHOT/rest/date/book?" +
                 "subject=testSubject&" +
@@ -80,11 +81,11 @@ public class EndToEndBookingServiceStressIT {
                 "&endDate=" + randomEnd.getTime();
     }
 
-    private Timestamp randomDate() {
+    private Date randomDate() {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         long startRange = Timestamp.valueOf("2019-01-01 00:00:00").getTime();
         long endRange = Timestamp.valueOf("2019-12-31 00:00:00").getTime();
         long diff = endRange - startRange + 1;
-        return new Timestamp(startRange + (long)(Math.random() * diff));
+        return new Date(startRange + (long)(Math.random() * diff));
     }
 }

@@ -7,7 +7,7 @@ import model.user.User;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.sql.Timestamp;
+import java.util.Date;
 
 import static model.booking.Booking.*;
 
@@ -58,21 +58,21 @@ public class Booking {
 
     private String subject;
     private String description;
-    private Timestamp start;
-    private Timestamp end;
+    private Date start;
+    private Date end;
 
     @XmlTransient
     @ManyToOne
     @JoinColumn
     private User user;
 
-    public Booking(String subject, Timestamp startDate, Timestamp endDate) {
+    public Booking(String subject, Date startDate, Date endDate) {
         this.subject = subject;
         this.start = startDate;
         this.end = endDate;
     }
 
-    public Booking(String subject, String description, Timestamp startDate, Timestamp endDate) {
+    public Booking(String subject, String description, Date startDate, Date endDate) {
         this.subject = subject;
         this.start = startDate;
         this.end = endDate;
@@ -91,11 +91,11 @@ public class Booking {
         return description;
     }
 
-    public Timestamp getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public Timestamp getEnd() {
+    public Date getEnd() {
         return end;
     }
 

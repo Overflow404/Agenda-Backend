@@ -2,14 +2,12 @@ package service;
 
 import model.booking.Booking;
 import org.junit.*;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import static model.booking.Booking.SPECIFIC_BOOKING;
@@ -46,8 +44,8 @@ public class RetrieveBookingsServiceIT {
 
     @Test
     public void successfulRetrieve() throws ParseException {
-        Timestamp start = new Timestamp(stringToMillis("1996-12-6 14:00:00.000000"));
-        Timestamp end = new Timestamp(stringToMillis("1996-12-6 16:00:00.000000"));
+        Date start = new Date(stringToMillis("1996-12-6 14:00:00.000000"));
+        Date end = new Date(stringToMillis("1996-12-6 16:00:00.000000"));
 
 
         Booking booking = new Booking("Subject", "Description", start, end);

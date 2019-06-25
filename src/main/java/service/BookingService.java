@@ -44,7 +44,8 @@ public class BookingService {
         });
 
 
-        Response overlappingResponse = overlappingService.checkIfDatesOverlap(booking.getStart(), booking.getEnd());
+        Response overlappingResponse =
+                overlappingService.checkIfDatesOverlap(booking.getStart(), booking.getEnd());
 
         if (overlappingResponse.success()) {
             entityManager.persist(booking);
