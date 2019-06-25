@@ -1,7 +1,8 @@
-package service.overlapping;
+package service;
 
-import model.Booking;
+import model.booking.Booking;
 import org.junit.*;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -11,24 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.CoreMatchers.is;
+
 
 public class OverlappingServiceIT {
-
-    /* TODO TESTS OVERLAPPING DATES
-        After,
-        StartTouching,
-        StartInside,
-        InsideStartTouching,
-        EnclosingStartTouching,
-        Enclosing,
-        EnclosingEndTouching,
-        ExactMatch,
-        Inside,
-        InsideEndTouching,
-        EndInside,
-        EndTouching,
-        Before
-    */
 
     private static EntityManagerFactory entityManagerFactory;
     private final static String PERSISTENCE_UNIT = "testUnit";
@@ -44,9 +31,9 @@ public class OverlappingServiceIT {
     public void setup() throws ParseException {
         entityManager = entityManagerFactory.createEntityManager();
         overlappingService = new OverlappingService();
-        overlappingService.setEntityManager(entityManager);
+        overlappingService.entityManager = entityManager;
         deleteTables();
-        insertSampleSlot("2019-06-16 14:00:00.000000", "2019-06-16 16:00:00.000000");
+        insertSampleSlot();
     }
 
     @After
@@ -60,131 +47,132 @@ public class OverlappingServiceIT {
     }
 
     @Test
-    public void AfterTest() throws ParseException {
+    public void afterTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 10:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 13:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
-        Assert.assertTrue(result.success());
+        //Assert.assertTrue(result.success());
+        Assert.assertThat(result.success(), is(true));
     }
 
     @Test
-    public void StartTouchingTest() throws ParseException {
+    public void startTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 10:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 14:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertTrue(result.success());
     }
 
     @Test
-    public void StartInsideTest() throws ParseException {
+    public void startInsideTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 10:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 14:01:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void InsideStartTouchingTest() throws ParseException {
+    public void insideStartTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 20:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void EnclosingStartTouchingTest() throws ParseException {
+    public void enclosingStartTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 15:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void EnclosingTest() throws ParseException {
+    public void enclosingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:30:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 15:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void EnclosingEndTouchingTest() throws ParseException {
+    public void enclosingEndTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:30:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 16:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void ExactMatchTest() throws ParseException {
+    public void exactMatchTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 16:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void InsideTest() throws ParseException {
+    public void insideTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 13:30:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 16:30:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void InsideEndTouchingTest() throws ParseException {
+    public void insideEndTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 13:30:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 16:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void EndInsideTest() throws ParseException {
+    public void endInsideTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:30:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 18:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertFalse(result.success());
     }
 
     @Test
-    public void EndTouchingTest() throws ParseException {
+    public void endTouchingTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 16:00:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 18:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertTrue(result.success());
     }
 
     @Test
-    public void BeforeTest() throws ParseException {
+    public void beforeTest() throws ParseException {
         Timestamp start = new Timestamp(stringToMillis("2019-06-16 16:01:00.000000"));
         Timestamp end = new Timestamp(stringToMillis("2019-06-16 19:00:00.000000"));
 
-        OverlappingResult result = overlappingService.checkIfDatesOverlap(start, end);
+        Response result = overlappingService.checkIfDatesOverlap(start, end);
 
         Assert.assertTrue(result.success());
     }
@@ -207,9 +195,9 @@ public class OverlappingServiceIT {
         entityManager.getTransaction().commit();
     }
 
-    private void insertSampleSlot(String s, String e) throws ParseException {
-        Timestamp start = new Timestamp(stringToMillis(s));
-        Timestamp end = new Timestamp(stringToMillis(e));
+    private void insertSampleSlot() throws ParseException {
+        Timestamp start = new Timestamp(stringToMillis("2019-06-16 14:00:00.000000"));
+        Timestamp end = new Timestamp(stringToMillis("2019-06-16 16:00:00.000000"));
 
         entityManager.getTransaction().begin();
         Booking booking = new Booking("Test subject", "Test description", start, end);
