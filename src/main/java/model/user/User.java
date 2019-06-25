@@ -1,4 +1,6 @@
-package model;
+package model.user;
+
+import model.booking.Booking;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -9,8 +11,8 @@ import java.util.Set;
 @XmlRootElement(name="user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Booking> bookings = new HashSet<Booking>();
