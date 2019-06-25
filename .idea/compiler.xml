@@ -2,6 +2,11 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true">
+        <sourceOutputDir name="generated_annotations" />
+        <sourceTestOutputDir name="generated_annotations_tests" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -10,7 +15,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Agenda" target="1.5" />
+      <module name="Agenda" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
