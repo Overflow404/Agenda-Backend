@@ -14,6 +14,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String username;
+    private String password;
+    private String gmt;
+    private String email;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Booking> bookings = new HashSet<Booking>();
 
