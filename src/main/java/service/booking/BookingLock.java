@@ -1,25 +1,25 @@
-package lock;
+package service.booking;
 
 import org.apache.commons.lang3.time.DateUtils;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DateLock {
+class BookingLock {
 
-    private static DateLock dateLock;
+    private static BookingLock bookingLock;
     private static ConcurrentHashMap<Date, ReentrantLock> locks;
 
-    public static DateLock getInstance() {
-        if (dateLock == null) {
+    static BookingLock getInstance() {
+        if (bookingLock == null) {
             locks = new ConcurrentHashMap<>();
-            dateLock = new DateLock();
+            bookingLock = new BookingLock();
         }
-        return dateLock;
+        return bookingLock;
     }
 
     //Performs lock based on day.
-    public void lock(Date date) {
+    void lock(Date date) {
         Date truncatedDate = DateUtils.truncate(date, Calendar.DATE);
         locks.compute(truncatedDate, (k,v) -> {
             if (v == null) {
@@ -27,11 +27,10 @@ public class DateLock {
             }
             return v;
         }).lock();
-
     }
 
     //Performs unlock based on day.
-    public void unlock(Date date) {
+    void unlock(Date date) {
         Date truncatedDate = DateUtils.truncate(date, Calendar.DATE);
         locks.computeIfPresent(truncatedDate, (k, v) -> {
             v.unlock();
@@ -40,4 +39,3 @@ public class DateLock {
     }
 
 }
-

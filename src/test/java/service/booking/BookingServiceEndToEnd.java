@@ -1,7 +1,7 @@
-package service;
+/* TODO mettere su un application server di test con un db di test :)
+package service.booking;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -9,22 +9,23 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class EndToEndBookingServiceIT {
+public class BookingServiceEndToEnd {
 
-    /*
+    */
+/*
     * Effects the real database.
-    * */
+    * *//*
+
     @Test
     public void stressTest() throws InterruptedException, IOException {
         final int N_THREAD = 2;
-        final int N_BOOKING = 256;
+        final int N_BOOKING = 64;
 
         Thread[] threads = new Thread[N_THREAD];
         HttpClient client = HttpClientBuilder.create().build();
@@ -43,18 +44,14 @@ public class EndToEndBookingServiceIT {
 
         }
 
-        String url1 = "http://localhost:8080/Agenda-1.0-SNAPSHOT/rest/date/retrieveAll";
+        String url1 = "http://localhost:8080/Agenda-1.0-SNAPSHOT/rest/date/retrieveBookingsCount";
         HttpGet request = new HttpGet(url1);
         HttpResponse response = client.execute(request);
 
         HttpEntity entity = response.getEntity();
         String responseString = EntityUtils.toString(entity, "UTF-8");
 
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(responseString).getAsJsonObject();
-        int count = Integer.parseInt(obj.get("content").getAsString());
-
-        Assert.assertEquals(N_BOOKING, count);
+       System.out.println(responseString);
     }
 
     private Runnable bookingThread(final String url, final HttpClient client) {
@@ -89,3 +86,4 @@ public class EndToEndBookingServiceIT {
         return new Date(startRange + (long)(Math.random() * diff));
     }
 }
+*/

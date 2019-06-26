@@ -1,15 +1,15 @@
-package model.booking;
+package model;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import model.user.User;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
+import java.util.Objects;
 
-import static model.booking.Booking.*;
+import static model.Booking.*;
 
 @NamedQueries({
         @NamedQuery(
@@ -18,7 +18,7 @@ import static model.booking.Booking.*;
                         "FROM Booking b " +
                         "WHERE b.start < :inputEndDate and :inputStartDate < b.end"),
         @NamedQuery(
-                name = GET_FROM_DATE,
+                name = GET_BOOKING_FROM_DATE,
                 query = "SELECT b " +
                         "FROM Booking b " +
                         "WHERE function('DAY', b.start) =:inputDay" +
@@ -31,7 +31,7 @@ import static model.booking.Booking.*;
                         "WHERE b.subject=:subject and b.description=:description and" +
                         " b.start=:start and b.end=:end"),
         @NamedQuery(
-                name = ALL,
+                name = GET_ALL_BOOKINGS,
                 query = "SELECT b " +
                         "FROM Booking b ")
 })
@@ -41,13 +41,12 @@ import static model.booking.Booking.*;
 @Getter
 @Setter
 @ToString
-
 public class Booking {
 
     public static final String OVERLAPPING = "overlapping";
-    public static final String GET_FROM_DATE = "getFromDay";
+    public static final String GET_BOOKING_FROM_DATE = "getFromDay";
     public static final String SPECIFIC_BOOKING = "specificBooking";
-    public static final String ALL = "uniqueRecord";
+    public static final String GET_ALL_BOOKINGS = "uniqueRecord";
 
     public Booking() {
     }
@@ -66,12 +65,6 @@ public class Booking {
     @JoinColumn
     private User user;
 
-    public Booking(String subject, Date startDate, Date endDate) {
-        this.subject = subject;
-        this.start = startDate;
-        this.end = endDate;
-    }
-
     public Booking(String subject, String description, Date startDate, Date endDate) {
         this.subject = subject;
         this.start = startDate;
@@ -83,20 +76,19 @@ public class Booking {
         this.user = user;
     }
 
-    public String getSubject() {
-        return subject;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return subject.equals(booking.subject) &&
+                Objects.equals(description, booking.description) &&
+                start.equals(booking.start) &&
+                end.equals(booking.end);
     }
 
-    public String getDescription() {
-        return description;
+    @Override
+    public int hashCode() {
+        return Objects.hash(subject, description, start, end);
     }
-
-    public Date getStart() {
-        return start;
-    }
-
-    public Date getEnd() {
-        return end;
-    }
-
 }

@@ -6,8 +6,8 @@
 
 <persistence-unit name="testUnit" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>model.booking.Booking</class>
-    <class>model.user.User</class>
+    <class>model.Booking</class>
+    <class>model.User</class>
     <properties>
         <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:TEST"/>
         <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
