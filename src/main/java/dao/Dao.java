@@ -93,7 +93,7 @@ public class Dao {
         return true;
     }
 
-    public Optional<User> verifyUser(User user) {
+    public Optional<User> verifyUserRegistered(User user) {
         String email = user.getEmail();
         String password = user.getPassword();
         try {

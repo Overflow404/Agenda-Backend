@@ -21,7 +21,7 @@ public class LoginService {
     Dao dao;
 
     public Result login(User user) {
-        Optional<User> realUser = dao.verifyUser(user);
+        Optional<User> realUser = dao.verifyUserRegistered(user);
         if (realUser.isEmpty()) {
             return Result.failure("User not found!");
         }
