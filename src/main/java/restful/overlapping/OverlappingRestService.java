@@ -1,14 +1,12 @@
 package restful.overlapping;
 
-
-import service.AuthService;
+import service.auth.AuthService;
+import service.Result;
 import service.overlapping.OverlappingService;
-
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.Date;
 
 import static config.Configuration.OVERLAPPING_SERVICE_PATH;
@@ -16,6 +14,8 @@ import static config.Configuration.ROOT_PATH;
 
 @Path(ROOT_PATH)
 public class OverlappingRestService {
+
+    private static AuthService auth = new AuthService();
 
     @EJB
     private OverlappingService overlappingService;
@@ -25,17 +25,32 @@ public class OverlappingRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response overlap(@HeaderParam("Authorization") String jwt,
                             @QueryParam("startDate") long startDate,
-                            @QueryParam("endDate") long endDate) {
+                            @QueryParam("endDate") long endDate,
+                            @QueryParam("group") String group){
 
-        AuthService auth = new AuthService();
+        Date start = new Date(startDate);
+        Date end = new Date(endDate);
 
-        Date startMillisDate = new Date(startDate);
-        Date endMillisDate = new Date(endDate);
+        if (endTimeIsGreaterThanStartTime(start, end)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
 
         if (!auth.isAuthenticated(jwt)) {
             Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        return overlappingService.checkIfDatesOverlap(startMillisDate, endMillisDate);
+        Result result = overlappingService.checkIfDatesOverlap(start, end, group);
+
+        if (result.success()) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.PRECONDITION_FAILED)
+                    .entity(result.getFailureReason())
+                    .build();
+        }
+    }
+
+    private boolean endTimeIsGreaterThanStartTime(Date start, Date end) {
+        return start.after(end) || start.equals(end);
     }
 }

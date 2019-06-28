@@ -1,16 +1,27 @@
+/*
 package service.booking;
 
 import model.Booking;
+import model.User;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import service.overlapping.OverlappingService;
 import utils.TestUtils;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.transaction.TransactionSynchronizationRegistry;
+import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Date;
 
+import static model.User.GET_USER_BY_MAIL;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static utils.TestUtils.RANDOM_GROUP;
+import static utils.TestUtils.RANDOM_MAIL;
 
 public class BookingServiceTest {
 
@@ -40,7 +51,7 @@ public class BookingServiceTest {
 
         bookingService = new BookingService();
         bookingService.manager = manager;
-        bookingService.overlappingService = overlappingService;
+        bookingService.service = overlappingService;
         bookingService.registry = registry;
 
         start = new Timestamp(utils.stringToMillis("2019-06-16 14:00:00.000000"));
@@ -51,25 +62,32 @@ public class BookingServiceTest {
         when(booking.getEnd()).thenReturn(end);
     }
 
-/*    @Test
-    @PrepareForTest(BookingService.class)
-    public void bookingAfterOverlappingVerify() throws Exception {
-        when(overlappingService.checkIfDatesOverlap(start, end))
+    @Test
+    @SuppressWarnings("unchecked")
+    public void successfulBooking() {
+        Mockito.doNothing().when(bookingService.registry).registerInterposedSynchronization(any());
+
+        when(overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP))
                 .thenReturn(Response.ok().build());
 
+        doReturn(HttpStatus.SC_OK).when(overlappingService).checkIfDatesOverlap(start, end, RANDOM_GROUP).getStatus();
+
         User user = mock(User.class);
+        when(user.getEmail()).thenReturn(RANDOM_MAIL);
 
-        BookingService spy = PowerMockito.spy(new BookingService());
-        PowerMockito.doReturn(user)
-                .when(spy, method(BookingService.class, "getUserByMail", String.class))
-                .withArguments("");
+        Booking booking = mock(Booking.class);
+        when(booking.getStart()).thenReturn(new Date());
 
-        Mockito.doThrow(new NoResultException()).when(user).addBooking(any());
+        TypedQuery<User> mockedQuery = (TypedQuery<User>) mock(TypedQuery.class);
+        when(manager.createNamedQuery(GET_USER_BY_MAIL, User.class)).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("email", RANDOM_MAIL)).thenReturn(mockedQuery);
+        when(mockedQuery.getSingleResult()).thenReturn(user);
 
-        Response response = bookingService.book(booking, "");
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
-    }*/
+        bookingService.book(booking, RANDOM_MAIL);
+    }
+
 
 
 
 }
+*/

@@ -1,4 +1,4 @@
-/* TODO mettere su un application server di test con un db di test :)
+
 package service.booking;
 
 
@@ -17,10 +17,7 @@ import java.util.TimeZone;
 
 public class BookingServiceEndToEnd {
 
-    */
-/*
-    * Effects the real database.
-    * *//*
+
 
     @Test
     public void stressTest() throws InterruptedException, IOException {
@@ -86,4 +83,3 @@ public class BookingServiceEndToEnd {
         return new Date(startRange + (long)(Math.random() * diff));
     }
 }
-*/

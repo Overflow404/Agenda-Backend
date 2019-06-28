@@ -1,9 +1,7 @@
-package service;
+package service.auth;
 
 import com.google.gson.Gson;
-
 import java.util.Base64;
-import java.util.Date;
 import java.util.Map;
 
 public class AuthService {
@@ -12,7 +10,7 @@ public class AuthService {
     private static Base64.Decoder decoder = Base64.getUrlDecoder();
 
     public boolean isAuthenticated(String jwt) {
-        if (jwt == null ||jwtIsNull(jwt)) {
+        if (jwt == null || jwtIsNull(jwt)) {
             return false;
         }
 
@@ -20,8 +18,6 @@ public class AuthService {
         Map body = new Gson().fromJson(getBody(clearedJwt), Map.class);
 
         long exp = parseDate(body.get("exp").toString());
-        System.out.println("Current time: " + new Date(System.currentTimeMillis()) +
-                " Token expiration: " + new Date(exp) + " so " + (System.currentTimeMillis() <= exp));
         return System.currentTimeMillis() <= exp;
     }
 
@@ -31,7 +27,7 @@ public class AuthService {
         return body.get("email").toString();
     }
 
-    public boolean jwtIsNull(String jwt) {
+    private boolean jwtIsNull(String jwt) {
         return jwt.equals(NULL_BEARER);
     }
 

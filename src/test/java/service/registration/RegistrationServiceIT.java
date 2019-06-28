@@ -1,3 +1,4 @@
+/*
 package service.registration;
 
 import config.Configuration;
@@ -11,6 +12,8 @@ import javax.persistence.Persistence;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static utils.TestUtils.RANDOM_GROUP;
 
 public class RegistrationServiceIT {
 
@@ -30,6 +33,8 @@ public class RegistrationServiceIT {
         manager = entityManagerFactory.createEntityManager();
         registrationService = new RegistrationService();
         registrationService.manager = manager;
+
+        utils.deleteTables(manager);
     }
 
     @After
@@ -43,28 +48,64 @@ public class RegistrationServiceIT {
     }
 
     @Test
-    public void successfulRegistration() {
-        User user = new User("Gaspare", "Armato", "GMT+02",
-                "gaspare.armato1@gmail.com", "myPassword");
+    public void registerAnOwnerUser() {
+        User user = new User("test", "test", "test", "test",
+                "test", RANDOM_GROUP, true);
 
         registrationService.register(user);
-        boolean userRegistered = utils.userIsInDatabase(user, manager);
 
-        Assert.assertThat(userRegistered, is(true));
+        User expected = utils.findUserByCalendarAndEmail(RANDOM_GROUP, "test", manager);
+
+        Assert.assertThat(expected, is(notNullValue()));
     }
 
     @Test
-    public void alreadyRegistered() {
-        User user = new User("Gaspare", "Armato", "GMT+02",
-                "gaspare.armato1@gmail.com", "myPassword");
+    public void registerUserToUnknownGroup() {
+        User user = new User("test", "test", "test", "test",
+                "test", "inexistent", false);
+
+        Response response = registrationService.register(user);
+
+        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_NOT_FOUND));
+
+    }
+
+    @Test
+    public void registerUserToKnownGroup() {
+        User owner = new User("test", "test", "test", "test1",
+                "test", RANDOM_GROUP, true);
 
         manager.getTransaction().begin();
+        registrationService.register(owner);
+
+        User user = new User("test", "test", "test", "test2",
+                "test", RANDOM_GROUP, false);
+
         registrationService.register(user);
+        manager.getTransaction().commit();
+
+        User expected = utils.findUserByCalendarAndEmail(RANDOM_GROUP, "test2", manager);
+
+        Assert.assertThat(expected.getGroupName(), is(RANDOM_GROUP));
+        Assert.assertThat(expected.getCalendar(), is(user.getCalendar()));
+        Assert.assertThat(expected.isOwner(), is(false));
+    }
+
+
+    @Test
+    public void registerAnAlreadyRegisteredOwnerUser() {
+        User owner = new User("test", "test", "test", "test1",
+                "test", RANDOM_GROUP, true);
+
+        manager.getTransaction().begin();
+        registrationService.register(owner);
         manager.flush();
         manager.clear();
-        Response response = registrationService.register(user);
+        Response response = registrationService.register(owner);
         manager.getTransaction().commit();
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
+
 }
+*/

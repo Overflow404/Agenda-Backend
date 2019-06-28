@@ -1,75 +1,41 @@
 package service.booking;
 
-import config.Configuration;
+import dao.Dao;
 import model.Booking;
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.ws.rs.core.Response;
 import model.User;
-import org.apache.http.HttpStatus;
+import service.Result;
 import service.overlapping.OverlappingService;
-
-import static model.User.GET_USER_BY_MAIL;
+import java.util.Date;
 
 @Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class BookingService {
 
-    @PersistenceContext(unitName = Configuration.UNIT)
-    EntityManager manager;
-
-    @Resource(mappedName = "java:comp/TransactionSynchronizationRegistry")
-    TransactionSynchronizationRegistry registry;
+    @EJB
+    OverlappingService service;
 
     @EJB
-    OverlappingService overlappingService;
+    Dao dao;
 
-    private BookingLock bookingLock = BookingLock.getInstance();
+    public Result book(Booking booking, String email) {
+        User user = dao.getUserByMail(email);
 
-    public Response book(final Booking booking, String email) {
-        bookingLock.lock(booking.getStart());
+        Date start = booking.getStart();
+        Date end = booking.getEnd();
+        String calendarName = user.getGroupName();
 
-        BookingSynchronization synchronization = new BookingSynchronization();
-        synchronization.booking = booking;
+        Result result = service.checkIfDatesOverlap(start, end, calendarName);
 
-        registry.registerInterposedSynchronization(synchronization);
-
-        Response response = overlappingService.checkIfDatesOverlap(booking.getStart(), booking.getEnd());
-
-        if (response.getStatus() == HttpStatus.SC_OK) {
-            User user = getUserByMail(email);
-            user.addBooking(booking);
-            //manager.persist(booking);
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.CONFLICT).build();
+        if (result.success()) {
+            dao.addBookingToUser(booking, user);
+            return Result.success("Booking confirmed!");
         }
+        return Result.failure("This time slot is already booked!!");
     }
 
-    private User getUserByMail(String email) {
-        return manager
-                .createNamedQuery(GET_USER_BY_MAIL, User.class)
-                .setParameter("email", email)
-                .getSingleResult();
+    public void setService(OverlappingService service) {
+        this.service = service;
     }
-
-    public void setManager(EntityManager manager) {
-        this.manager = manager;
-    }
-
-    public void setOverlappingService(OverlappingService overlappingService) {
-        this.overlappingService = overlappingService;
-    }
-
-    public void setRegistry(TransactionSynchronizationRegistry registry) {
-        this.registry = registry;
-    }
-
 
 }

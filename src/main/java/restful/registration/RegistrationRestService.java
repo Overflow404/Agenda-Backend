@@ -1,7 +1,8 @@
 package restful.registration;
 
 import model.User;
-import service.AuthService;
+import service.auth.AuthService;
+import service.Result;
 import service.registration.RegistrationService;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -13,6 +14,8 @@ import static config.Configuration.*;
 @Path(ROOT_PATH)
 public class RegistrationRestService {
 
+    private static AuthService auth = new AuthService();
+
     @EJB
     private RegistrationService registrationService;
 
@@ -21,7 +24,6 @@ public class RegistrationRestService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response register(@HeaderParam("Authorization") String jwt, User user) {
-        AuthService auth = new AuthService();
 
         if (userIsNull(user) || userIsEmpty(user)) {
             Response.status(Response.Status.PARTIAL_CONTENT).build();
@@ -31,7 +33,15 @@ public class RegistrationRestService {
             Response.status(Response.Status.ACCEPTED).build();
         }
 
-        return registrationService.register(user);
+        Result result = registrationService.register(user);
+
+        if (result.success()) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.PRECONDITION_FAILED)
+                    .entity(result.getFailureReason())
+                    .build();
+        }
     }
 
     private boolean userIsNull(User user) {

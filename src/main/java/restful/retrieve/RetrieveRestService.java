@@ -1,6 +1,7 @@
 package restful.retrieve;
 
-import service.AuthService;
+import service.auth.AuthService;
+import service.Result;
 import service.retrieve.RetrieveBookingsService;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -13,6 +14,8 @@ import static config.Configuration.ROOT_PATH;
 @Path(ROOT_PATH)
 public class RetrieveRestService {
 
+    private static AuthService auth = new AuthService();
+
     @EJB
     private RetrieveBookingsService retrieveBookingsService;
 
@@ -23,13 +26,14 @@ public class RetrieveRestService {
                              @QueryParam("day") int day,
                              @QueryParam("month") int month,
                              @QueryParam("year") int year) {
-        AuthService auth = new AuthService();
 
         if (auth.isAuthenticated(jwt)) {
             String email = auth.getEmail(jwt);
-            return retrieveBookingsService.retrieve(day, month, year, email);
+            Result result =  retrieveBookingsService.retrieve(day, month, year, email);
+            if (result.success()) {
+                return Response.ok().entity(result.getContent()).build();
+            }
         }
         return Response.status(Response.Status.UNAUTHORIZED).build();
-
     }
 }

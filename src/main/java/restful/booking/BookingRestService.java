@@ -1,7 +1,8 @@
 package restful.booking;
 
 import model.Booking;
-import service.AuthService;
+import service.auth.AuthService;
+import service.Result;
 import service.booking.BookingService;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -15,6 +16,8 @@ import static config.Configuration.ROOT_PATH;
 @Path(ROOT_PATH)
 public class BookingRestService {
 
+    private static AuthService auth = new AuthService();
+
     @EJB
     private BookingService bookingService;
 
@@ -27,8 +30,6 @@ public class BookingRestService {
                          @QueryParam("startDate") long startDate,
                          @QueryParam("endDate") long endDate) {
 
-        AuthService auth = new AuthService();
-
         if (isEmptyOrNull(subject)) {
             return Response.status(Response.Status.PARTIAL_CONTENT).build();
         }
@@ -37,22 +38,26 @@ public class BookingRestService {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
-        Date startMillisDate = new Date(startDate);
-        Date endMillisDate = new Date(endDate);
+        Date start = new Date(startDate);
+        Date end = new Date(endDate);
 
-        Booking booking = new Booking(subject, description, startMillisDate, endMillisDate);
+        Booking booking = new Booking(subject, description, start, end);
         String email = auth.getEmail(jwt);
 
-        return bookingService.book(booking, email);
+        Result result = bookingService.book(booking, email);
+
+        if (result.success()) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.PRECONDITION_FAILED)
+                    .entity(result.getFailureReason())
+                    .build();
+
+        }
     }
 
-    private boolean isEmptyOrNull(String ... args) {
-        for (String arg : args) {
-            if (arg == null || arg.isBlank()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isEmptyOrNull(String arg) {
+        return arg == null || arg.isBlank();
     }
 
 }

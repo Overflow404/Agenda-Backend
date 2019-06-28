@@ -1,33 +1,44 @@
 package service.registration;
 
-import config.Configuration;
+import dao.Dao;
+import model.Calendar;
 import model.User;
+import service.Result;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.ws.rs.core.Response;
 
 @Stateless
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class RegistrationService {
 
-    @PersistenceContext(unitName = Configuration.UNIT)
-    EntityManager manager;
+    @EJB
+    Dao dao;
 
-    public Response register(User user) {
-        try {
-            manager.persist(user);
-            manager.flush();
-            return Response.ok().build();
-        } catch (PersistenceException e) {
-            return Response.status(Response.Status.CONFLICT).build();
+    public Result register(User user) {
+
+        String group = user.getGroupName();
+
+        if (groupOwner(user) && dao.groupExist(group)) {
+            return Result.failure("Attempting to own another group!");
         }
+
+        if (groupOwner(user)) {
+            Calendar calendar = new Calendar(group);
+            calendar.addUser(user);
+            return dao.persistCalendar(calendar);
+        }
+
+        if (!dao.groupExist(group)) {
+            return Result.failure("Group not found!");
+        }
+
+        Calendar calendar = dao.retrieveCalendar(group);
+        calendar.addUser(user);
+
+        return Result.success("Registration successful!");
     }
 
-    public void setManager(EntityManager manager) {
-        this.manager = manager;
+
+    private boolean groupOwner(User user) {
+        return user.isOwner();
     }
 }

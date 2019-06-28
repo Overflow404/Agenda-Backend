@@ -5,8 +5,7 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-@Getter
-@Setter
+@Getter @Setter
 public class Result<T> {
 
     private ResultType resultType;
@@ -25,7 +24,7 @@ public class Result<T> {
     }
 
     public static <T> service.Result success(T content) {
-        return new service.Result<T>(content, ResultType.SUCCESS, null);
+        return new service.Result<>(content, ResultType.SUCCESS, null);
     }
 
     public static <T> service.Result failure(String reason) {

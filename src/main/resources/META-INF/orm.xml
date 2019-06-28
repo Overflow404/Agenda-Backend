@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
+                                     http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd" version="2.1">
+
+    <named-query name="getCalendarByName">
+        <query>SELECT c FROM Calendar c WHERE c.calendarName = :name</query>
+    </named-query>
+
+    <named-query name="overlapping">
+        <query>SELECT b FROM Booking b JOIN Calendar c on b.calendar = c
+            WHERE b.start &lt; :inputEndDate and :inputStartDate &lt; b.end and c.calendarName = :groupName</query>
+    </named-query>
+
+    <named-query name="getFromDay">
+        <query>SELECT b FROM Booking b  JOIN Calendar c on b.calendar = c
+            WHERE function('DAY', b.start) = :inputDay and function('MONTH', b.start) = :inputMonth
+            and function('YEAR', b.start) = :inputYear</query>
+    </named-query>
+
+    <named-query name="specificBooking">
+        <query>SELECT b FROM User u JOIN Calendar c on u.calendar = c JOIN Booking b on b.calendar = c
+            WHERE b.subject=:subject and b.description = :description and
+            b.start=:start and b.end = :end and u.email = :email</query>
+    </named-query>
+
+    <named-query name="uniqueRecord">
+        <query>SELECT b FROM Booking b</query>
+    </named-query>
+
+    <named-query name="getBookingsFromDateAndUser">
+        <query>SELECT b FROM User u JOIN Calendar c on u.calendar = c JOIN Booking b on b.calendar = c
+            WHERE u.email=:email and function('DAY', b.start) =:inputDay
+            and function('MONTH', b.start) =:inputMonth
+            and function('YEAR', b.start) =:inputYear</query>
+    </named-query>
+
+    <named-query name="findUserByName">
+        <query>SELECT c FROM User c WHERE c.email = :email</query>
+    </named-query>
+
+    <named-query name="findUserByEmailAndCalendar">
+        <query>SELECT u FROM Calendar c JOIN User u on u.calendar = c WHERE c.calendarName = :name and u.email=:mail</query>
+    </named-query>
+
+    <named-query name="specificUser">
+        <query>SELECT u FROM User u WHERE u.firstName=:firstName and u.lastName=:lastName
+            and u.email=:email and u.gmt=:gmt and u.password=:password</query>
+    </named-query>
+
+    <named-query name="isRegistered">
+        <query>SELECT u FROM User u WHERE u.email=:email and u.password=:password</query>
+    </named-query>
+
+    <named-query name="getUserByMail">
+        <query>SELECT u FROM User u WHERE u.email=:email</query>
+    </named-query>
+
+</entity-mappings>
+

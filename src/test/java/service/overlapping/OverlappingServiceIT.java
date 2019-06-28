@@ -1,18 +1,19 @@
+/*
 package service.overlapping;
 
 import model.Booking;
+import model.Calendar;
 import org.apache.http.HttpStatus;
 import org.junit.*;
 import utils.TestUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
-
+import static utils.TestUtils.RANDOM_GROUP;
 
 public class OverlappingServiceIT {
 
@@ -33,8 +34,9 @@ public class OverlappingServiceIT {
         overlappingService = new OverlappingService();
         overlappingService.setManager(entityManager);
 
-        deleteTables();
-        insertSampleSlot();
+        utils.deleteTables(entityManager);
+        Calendar calendar = utils.createSampleCalendar(entityManager);
+        insertSampleSlot(calendar);
     }
 
     @After
@@ -52,7 +54,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 10:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 13:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
     }
@@ -62,7 +64,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 10:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 14:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
     }
@@ -72,7 +74,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 10:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 14:01:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -82,7 +84,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 20:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -92,7 +94,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 15:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -102,7 +104,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:30:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 15:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -112,7 +114,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:30:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 16:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -122,7 +124,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 16:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -132,7 +134,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 13:30:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 16:30:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -142,7 +144,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 13:30:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 16:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -152,7 +154,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:30:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 18:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
     }
@@ -162,7 +164,7 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 16:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 18:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
     }
@@ -172,31 +174,20 @@ public class OverlappingServiceIT {
         Date start = new Date(utils.stringToMillis("2019-06-16 16:01:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 19:00:00.000000"));
 
-        Response response = overlappingService.checkIfDatesOverlap(start, end);
+        Response response = overlappingService.checkIfDatesOverlap(start, end, RANDOM_GROUP);
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
     }
 
-    private void deleteTables() {
-        entityManager.getTransaction().begin();
-
-        Query deleteBookings = entityManager.createQuery("DELETE FROM Booking");
-        Query deleteUsers = entityManager.createQuery("DELETE FROM User");
-
-        deleteBookings.executeUpdate();
-        deleteUsers.executeUpdate();
-
-        entityManager.getTransaction().commit();
-    }
-
-    private void insertSampleSlot() {
+    private void insertSampleSlot(Calendar calendar) {
         Date start = new Date(utils.stringToMillis("2019-06-16 14:00:00.000000"));
         Date end = new Date(utils.stringToMillis("2019-06-16 16:00:00.000000"));
 
         entityManager.getTransaction().begin();
         Booking booking = new Booking("Test subject", "Test description", start, end);
-        entityManager.persist(booking);
+        calendar.addBooking(booking);
         entityManager.flush();
         entityManager.getTransaction().commit();
     }
 }
+*/

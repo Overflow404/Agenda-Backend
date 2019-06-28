@@ -1,20 +1,24 @@
+/*
 package utils;
 
 import model.Booking;
+import model.Calendar;
 import model.User;
 import service.booking.BookingService;
 import service.registration.RegistrationService;
-
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static model.Booking.SPECIFIC_BOOKING;
+import static model.User.FIND_USER_BY_EMAIL_AND_CALENDAR;
 import static model.User.SPECIFIC_USER;
 
 public class TestUtils {
+
+    public final static String RANDOM_GROUP = "randomGroup";
+    public final static String RANDOM_MAIL = "randomMail";
 
     public Long stringToMillis(String date) {
         try {
@@ -49,9 +53,6 @@ public class TestUtils {
         }
     }
 
-    public boolean userIsInDatabase(User user, EntityManager manager) {
-        return getUser(user, manager) != null;
-    }
 
     private User getUser(User user, EntityManager manager) {
         try {
@@ -76,9 +77,11 @@ public class TestUtils {
 
         Query deleteBookings = manager.createQuery("DELETE FROM Booking");
         Query deleteUsers = manager.createQuery("DELETE FROM User");
+        Query deleteCalendar = manager.createQuery("DELETE FROM Calendar");
 
         deleteBookings.executeUpdate();
         deleteUsers.executeUpdate();
+        deleteCalendar.executeUpdate();
 
         manager.getTransaction().commit();
     }
@@ -89,9 +92,32 @@ public class TestUtils {
         manager.getTransaction().commit();
     }
 
+
     public void registerSampleUser(EntityManager manager) {
         RegistrationService registrationService = new RegistrationService();
         registrationService.setManager(manager);
-        registrationService.register(new User("", "","","test",""));
+        registrationService.register(new User("", "","","test","", "", true));
+    }
+
+
+    public Calendar createSampleCalendar(EntityManager manager) {
+        manager.getTransaction().begin();
+        Calendar calendar = new Calendar(RANDOM_GROUP);
+        manager.persistCalendar(calendar);
+        manager.getTransaction().commit();
+
+        return calendar;
+    }
+
+    public User findUserByCalendarAndEmail(String group, String email, EntityManager manager) {
+        manager.getTransaction().begin();
+        User u = manager
+                .createNamedQuery(FIND_USER_BY_EMAIL_AND_CALENDAR, User.class)
+                .setParameter("mail", email)
+                .setParameter("name", group)
+                .getSingleResult();
+        manager.getTransaction().commit();
+        return u;
     }
 }
+*/
