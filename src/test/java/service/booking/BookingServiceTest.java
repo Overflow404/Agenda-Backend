@@ -1,21 +1,16 @@
 package service.booking;
 
 import model.Booking;
-import org.apache.http.HttpStatus;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mock;
 import service.overlapping.OverlappingService;
 import utils.TestUtils;
 import javax.persistence.EntityManager;
 import javax.transaction.TransactionSynchronizationRegistry;
-import javax.ws.rs.core.Response;
 import java.sql.Timestamp;
-
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 public class BookingServiceTest {
 
@@ -56,22 +51,25 @@ public class BookingServiceTest {
         when(booking.getEnd()).thenReturn(end);
     }
 
-    @Test
-    public void successfulBooking() {
+/*    @Test
+    @PrepareForTest(BookingService.class)
+    public void bookingAfterOverlappingVerify() throws Exception {
         when(overlappingService.checkIfDatesOverlap(start, end))
                 .thenReturn(Response.ok().build());
 
-        Response response = bookingService.book(booking);
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
-    }
+        User user = mock(User.class);
 
-    @Test
-    public void unsuccessfulBooking() {
-        when(overlappingService.checkIfDatesOverlap(start, end))
-                .thenReturn(Response.status(Response.Status.CONFLICT).build());
+        BookingService spy = PowerMockito.spy(new BookingService());
+        PowerMockito.doReturn(user)
+                .when(spy, method(BookingService.class, "getUserByMail", String.class))
+                .withArguments("");
 
-        Response response = bookingService.book(booking);
+        Mockito.doThrow(new NoResultException()).when(user).addBooking(any());
+
+        Response response = bookingService.book(booking, "");
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
-    }
+    }*/
+
+
 
 }

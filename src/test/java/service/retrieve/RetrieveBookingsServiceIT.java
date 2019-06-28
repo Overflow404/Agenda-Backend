@@ -46,6 +46,7 @@ public class RetrieveBookingsServiceIT {
         retrieveBookingsService.manager = manager;
 
         utils.deleteTables(manager);
+        utils.registerSampleUser(manager);
     }
 
     @After
@@ -76,7 +77,7 @@ public class RetrieveBookingsServiceIT {
         utils.insertSampleSlot(manager, bookingService, booking1);
         utils.insertSampleSlot(manager, bookingService, booking2);
 
-        Response response = retrieveBookingsService.retrieve(day, month, year);
+        Response response = retrieveBookingsService.retrieve(day, month, year, "test");
         List<Booking> bookings = (List<Booking>)(response.getEntity());
 
         Assert.assertThat(bookings.get(0).equals(booking1), is(true));
@@ -86,7 +87,7 @@ public class RetrieveBookingsServiceIT {
     @Test
     @SuppressWarnings("unchecked")
     public void retrieveReturnEmptyList() {
-        Response response = retrieveBookingsService.retrieve(16, 6, 2019);
+        Response response = retrieveBookingsService.retrieve(16, 6, 2019, "test");
         Assert.assertThat(((List<Booking>) (response.getEntity())).isEmpty(), is(true));
     }
 

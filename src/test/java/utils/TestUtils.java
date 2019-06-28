@@ -3,6 +3,7 @@ package utils;
 import model.Booking;
 import model.User;
 import service.booking.BookingService;
+import service.registration.RegistrationService;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -39,6 +40,7 @@ public class TestUtils {
                     .setParameter("description", booking.getDescription())
                     .setParameter("start", booking.getStart())
                     .setParameter("end", booking.getEnd())
+                    .setParameter("email", "test")
                     .getSingleResult();
             manager.getTransaction().commit();
             return b;
@@ -83,7 +85,13 @@ public class TestUtils {
 
     public void insertSampleSlot(EntityManager manager, BookingService service, Booking booking) {
         manager.getTransaction().begin();
-        service.book(booking);
+        service.book(booking, "test");
         manager.getTransaction().commit();
+    }
+
+    public void registerSampleUser(EntityManager manager) {
+        RegistrationService registrationService = new RegistrationService();
+        registrationService.setManager(manager);
+        registrationService.register(new User("", "","","test",""));
     }
 }

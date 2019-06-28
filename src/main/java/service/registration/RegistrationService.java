@@ -19,7 +19,6 @@ public class RegistrationService {
 
     public Response register(User user) {
         try {
-            System.out.println(user.getEmail());
             manager.persist(user);
             manager.flush();
             return Response.ok().build();
@@ -28,4 +27,7 @@ public class RegistrationService {
         }
     }
 
+    public void setManager(EntityManager manager) {
+        this.manager = manager;
+    }
 }

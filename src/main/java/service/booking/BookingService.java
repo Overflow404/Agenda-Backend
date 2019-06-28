@@ -11,8 +11,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.ws.rs.core.Response;
+import model.User;
 import org.apache.http.HttpStatus;
 import service.overlapping.OverlappingService;
+
+import static model.User.GET_USER_BY_MAIL;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
@@ -29,7 +32,7 @@ public class BookingService {
 
     private BookingLock bookingLock = BookingLock.getInstance();
 
-    public Response book(final Booking booking) {
+    public Response book(final Booking booking, String email) {
         bookingLock.lock(booking.getStart());
 
         BookingSynchronization synchronization = new BookingSynchronization();
@@ -40,11 +43,20 @@ public class BookingService {
         Response response = overlappingService.checkIfDatesOverlap(booking.getStart(), booking.getEnd());
 
         if (response.getStatus() == HttpStatus.SC_OK) {
-            manager.persist(booking);
+            User user = getUserByMail(email);
+            user.addBooking(booking);
+            //manager.persist(booking);
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.CONFLICT).build();
         }
+    }
+
+    private User getUserByMail(String email) {
+        return manager
+                .createNamedQuery(GET_USER_BY_MAIL, User.class)
+                .setParameter("email", email)
+                .getSingleResult();
     }
 
     public void setManager(EntityManager manager) {

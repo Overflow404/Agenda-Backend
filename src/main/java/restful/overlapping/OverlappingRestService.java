@@ -1,13 +1,11 @@
 package restful.overlapping;
 
 
+import service.AuthService;
 import service.overlapping.OverlappingService;
 
 import javax.ejb.EJB;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -25,11 +23,18 @@ public class OverlappingRestService {
     @GET
     @Path(OVERLAPPING_SERVICE_PATH)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response overlap(@QueryParam("startDate") long startDate,
+    public Response overlap(@HeaderParam("Authorization") String jwt,
+                            @QueryParam("startDate") long startDate,
                             @QueryParam("endDate") long endDate) {
+
+        AuthService auth = new AuthService();
 
         Date startMillisDate = new Date(startDate);
         Date endMillisDate = new Date(endDate);
+
+        if (!auth.isAuthenticated(jwt)) {
+            Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
         return overlappingService.checkIfDatesOverlap(startMillisDate, endMillisDate);
     }

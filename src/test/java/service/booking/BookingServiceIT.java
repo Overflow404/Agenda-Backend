@@ -50,6 +50,7 @@ public class BookingServiceIT {
 
 
         utils.deleteTables(manager);
+        utils.registerSampleUser(manager);
         utils.insertSampleSlot(manager, bookingService, sampleBooking);
     }
 
@@ -71,7 +72,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(true));
     }
@@ -84,7 +85,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(true));
     }
@@ -97,7 +98,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -110,7 +111,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -123,7 +124,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -136,7 +137,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -149,7 +150,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -162,7 +163,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -175,7 +176,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -188,7 +189,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -201,7 +202,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(false));
     }
@@ -214,7 +215,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(true));
     }
@@ -227,7 +228,7 @@ public class BookingServiceIT {
         Booking booking = new Booking(subject, description, start, end);
         synchronization.booking = booking;
 
-        bookingService.book(booking);
+        bookingService.book(booking, "test");
 
         Assert.assertThat(utils.bookingIsInDatabase(booking, manager), is(true));
     }

@@ -45,10 +45,11 @@ public class RetrieveBookingServiceTest {
         when(mockedQuery.setParameter("inputDay", day)).thenReturn(mockedQuery);
         when(mockedQuery.setParameter("inputMonth", month)).thenReturn(mockedQuery);
         when(mockedQuery.setParameter("inputYear", year)).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("email", "test")).thenReturn(mockedQuery);
         when(mockedQuery.getResultList()).thenReturn(new ArrayList<>());
         when(manager.createNamedQuery(GET_BOOKING_FROM_DATE, Booking.class)).thenReturn(mockedQuery);
 
-        Response response = retrieveBookingsService.retrieve(day, month, year);
+        Response response = retrieveBookingsService.retrieve(day, month, year, "test");
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
         Assert.assertThat(((List<Booking>)(response.getEntity())).isEmpty(), is(true));
@@ -72,10 +73,12 @@ public class RetrieveBookingServiceTest {
         when(mockedQuery.setParameter("inputDay", day)).thenReturn(mockedQuery);
         when(mockedQuery.setParameter("inputMonth", month)).thenReturn(mockedQuery);
         when(mockedQuery.setParameter("inputYear", year)).thenReturn(mockedQuery);
+        when(mockedQuery.setParameter("email", "test")).thenReturn(mockedQuery);
+
         when(mockedQuery.getResultList()).thenReturn(result);
         when(manager.createNamedQuery(GET_BOOKING_FROM_DATE, Booking.class)).thenReturn(mockedQuery);
 
-        Response response = retrieveBookingsService.retrieve(day, month, year);
+        Response response = retrieveBookingsService.retrieve(day, month, year, "test");
 
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_OK));
         Assert.assertThat(((List<Booking>)(response.getEntity())).contains(booking1), is(true));

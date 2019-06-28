@@ -27,13 +27,21 @@ import static model.Booking.*;
         @NamedQuery(
                 name = SPECIFIC_BOOKING,
                 query = "SELECT b " +
-                        "FROM Booking b " +
+                        "FROM Booking b JOIN User u on b.user=u " +
                         "WHERE b.subject=:subject and b.description=:description and" +
-                        " b.start=:start and b.end=:end"),
+                        " b.start=:start and b.end=:end and u.email=:email"),
         @NamedQuery(
                 name = GET_ALL_BOOKINGS,
                 query = "SELECT b " +
-                        "FROM Booking b ")
+                        "FROM Booking b "),
+        @NamedQuery(
+                name = GET_BOOKINGS_FROM_DATE_AND_USER,
+                query = "SELECT b " +
+                        "FROM User u JOIN Booking b on u=b.user " +
+                        "WHERE u.email=:email and function('DAY', b.start) =:inputDay" +
+                        " and function('MONTH', b.start) =:inputMonth" +
+                        " and function('YEAR', b.start) =:inputYear")
+
 })
 
 @Entity
@@ -47,6 +55,7 @@ public class Booking {
     public static final String GET_BOOKING_FROM_DATE = "getFromDay";
     public static final String SPECIFIC_BOOKING = "specificBooking";
     public static final String GET_ALL_BOOKINGS = "uniqueRecord";
+    public static final String GET_BOOKINGS_FROM_DATE_AND_USER = "getBookingsFromDateAndUser";
 
     public Booking() {
     }
@@ -76,7 +85,7 @@ public class Booking {
         this.user = user;
     }
 
-    @Override
+/*    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -90,5 +99,5 @@ public class Booking {
     @Override
     public int hashCode() {
         return Objects.hash(subject, description, start, end);
-    }
+    }*/
 }

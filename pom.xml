@@ -94,10 +94,18 @@
         </dependency>
 
         <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.8.1</version>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.9</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -107,10 +115,18 @@
 
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-reflect</artifactId>
+            <artifactId>powermock-module-junit4</artifactId>
             <version>2.0.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.2</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework</groupId>
