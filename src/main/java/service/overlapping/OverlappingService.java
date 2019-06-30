@@ -1,16 +1,20 @@
 package service.overlapping;
 
-import dao.Dao;
-import service.Result;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.util.Date;
+        import dao.Dao;
+        import service.Result;
+        import javax.ejb.EJB;
+        import javax.ejb.Stateless;
+        import java.util.Date;
 
 @Stateless
 public class OverlappingService {
 
     @EJB
-    Dao dao;
+    private Dao dao;
+
+    public OverlappingService(Dao dao) {
+        this.dao = dao;
+    }
 
     public OverlappingService() {
 

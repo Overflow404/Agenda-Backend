@@ -1,7 +1,6 @@
 package restful.login;
 
 import model.User;
-import service.auth.AuthService;
 import service.Result;
 import service.login.LoginService;
 import javax.ejb.EJB;
@@ -14,8 +13,6 @@ import static config.Configuration.*;
 @Path(ROOT_PATH)
 public class LoginRestService {
 
-    private static AuthService auth = new AuthService();
-
     @EJB
     private LoginService loginService;
 
@@ -26,11 +23,7 @@ public class LoginRestService {
     public Response login(@HeaderParam("Authorization") String jwt, User user) {
 
         if (userIsNull(user) || userIsEmpty(user)) {
-            Response.status(Response.Status.PARTIAL_CONTENT).build();
-        }
-
-        if (auth.isAuthenticated(jwt)) {
-            Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.PARTIAL_CONTENT).build();
         }
 
         Result result = loginService.login(user);

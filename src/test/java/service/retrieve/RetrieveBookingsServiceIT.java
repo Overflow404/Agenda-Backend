@@ -1,30 +1,32 @@
-/*
 package service.retrieve;
 
 import config.Configuration;
+import dao.Dao;
 import model.Booking;
+import model.User;
 import org.junit.*;
+import service.Helper;
+import service.Result;
 import service.booking.BookingService;
 import service.overlapping.OverlappingService;
-import utils.TestUtils;
+import service.registration.RegistrationService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.core.Is.is;
+import static service.Helper.*;
+import static service.Helper.stringToMillis;
 
 public class RetrieveBookingsServiceIT {
-    private static EntityManagerFactory entityManagerFactory;
 
-    private EntityManager manager;
-    private RetrieveBookingsService retrieveBookingsService;
-    private TestUtils utils = new TestUtils();
-    private BookingService bookingService;
+    private static Dao dao;
+    private static  EntityManager manager;
+    private static RetrieveBookingsService rService;
+    private static EntityManagerFactory entityManagerFactory;
 
     @BeforeClass
     public static void setupClass() {
@@ -34,64 +36,52 @@ public class RetrieveBookingsServiceIT {
     @Before
     public void setup() {
         manager = entityManagerFactory.createEntityManager();
-
-        OverlappingService overlappingService = new OverlappingService();
-        overlappingService.setManager(manager);
-
-        bookingService = new BookingService();
-        bookingService.setManager(manager);
-        bookingService.setService(overlappingService);
-        bookingService.setRegistry(mock(TransactionSynchronizationRegistry.class));
-
-        retrieveBookingsService = new RetrieveBookingsService();
-        retrieveBookingsService.manager = manager;
-
-        utils.deleteTables(manager);
-        utils.registerSampleUser(manager);
+        dao = new Dao(manager);
+        rService = new RetrieveBookingsService(dao);
+        Helper helper = new Helper();
+        dao.start();
+        helper.deleteTables(manager, dao);
     }
 
     @After
-    public void teardown() {
+    public void tearDown() {
+        dao.commit();
         manager.close();
     }
 
     @AfterClass
-    public static void teardownClass() {
+    public static void tearDownClass() {
         entityManagerFactory.close();
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void retrieve() {
-        int day = 16;
-        int month = 6;
-        int year = 2019;
+    public void retrieveEmptyList() {
+        List<Booking> emptyList = new ArrayList<>();
 
-        Timestamp start1 = new Timestamp(utils.stringToMillis("2019-06-16 14:00:00.000000"));
-        Timestamp end1 = new Timestamp(utils.stringToMillis("2019-06-16 16:00:00.000000"));
-        Booking booking1 = new Booking("First subject", "First description", start1, end1);
+        Result result = rService.retrieve(6, 12, 1996, testEmail);
 
-        Timestamp start2 = new Timestamp(utils.stringToMillis("2019-06-16 21:00:00.000000"));
-        Timestamp end2 = new Timestamp(utils.stringToMillis("2019-06-16 23:00:00.000000"));
-        Booking booking2 = new Booking("Second subject", "Second description", start2, end2);
-
-        utils.insertSampleSlot(manager, bookingService, booking1);
-        utils.insertSampleSlot(manager, bookingService, booking2);
-
-        Response response = retrieveBookingsService.retrieve(day, month, year, "test");
-        List<Booking> bookings = (List<Booking>)(response.getEntity());
-
-        Assert.assertThat(bookings.get(0).equals(booking1), is(true));
-        Assert.assertThat(bookings.get(1).equals(booking2), is(true));
+        Assert.assertThat(result.success(), is(true));
+        Assert.assertThat(result.getContent(), is(emptyList));
     }
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void retrieveReturnEmptyList() {
-        Response response = retrieveBookingsService.retrieve(16, 6, 2019, "test");
-        Assert.assertThat(((List<Booking>) (response.getEntity())).isEmpty(), is(true));
+    public void retrieve() {
+        RegistrationService registrationService = new RegistrationService(dao);
+        OverlappingService oService = new OverlappingService(dao);
+        BookingService bService = new BookingService(oService, dao);
+
+        Date start = new Date(stringToMillis("1996-12-6 10:00:00.000000"));
+        Date end = new Date(stringToMillis("1996-12-6 14:00:00.000000"));
+        Booking booking = new Booking(testSubject, testDescription, start, end);
+
+        User user = new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true);
+
+        registrationService.register(user);
+        bService.book(booking, testEmail);
+        Result result = rService.retrieve(6, 12, 1996, testEmail);
+
+        Assert.assertThat(result.success(), is(true));
+        Assert.assertThat(result.getContent(), is(List.of(booking)));
     }
 
-
 }
-*/

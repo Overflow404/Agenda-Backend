@@ -3,20 +3,29 @@ package service.booking;
 import dao.Dao;
 import model.Booking;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import model.User;
 import service.Result;
 import service.overlapping.OverlappingService;
 import java.util.Date;
 
-@Stateless
+@Singleton
 public class BookingService {
 
     @EJB
-    OverlappingService service;
+    private OverlappingService oService;
 
     @EJB
-    Dao dao;
+    private Dao dao;
+
+    public BookingService(OverlappingService oService, Dao dao) {
+        this.oService = oService;
+        this.dao = dao;
+    }
+
+    public BookingService() {
+
+    }
 
     public Result book(Booking booking, String email) {
         User user = dao.getUserByMail(email);
@@ -25,17 +34,13 @@ public class BookingService {
         Date end = booking.getEnd();
         String calendarName = user.getGroupName();
 
-        Result result = service.checkIfDatesOverlap(start, end, calendarName);
+        Result result = oService.checkIfDatesOverlap(start, end, calendarName);
 
         if (result.success()) {
             dao.addBookingToUser(booking, user);
             return Result.success("Booking confirmed!");
         }
-        return Result.failure("This time slot is already booked!!");
-    }
-
-    public void setService(OverlappingService service) {
-        this.service = service;
+        return Result.failure("This time slot is already booked!");
     }
 
 }

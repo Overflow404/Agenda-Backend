@@ -1,7 +1,6 @@
 package restful.booking;
 
 import model.Booking;
-import service.auth.AuthService;
 import service.Result;
 import service.booking.BookingService;
 import javax.ejb.EJB;
@@ -16,8 +15,6 @@ import static config.Configuration.ROOT_PATH;
 @Path(ROOT_PATH)
 public class BookingRestService {
 
-    private static AuthService auth = new AuthService();
-
     @EJB
     private BookingService bookingService;
 
@@ -28,21 +25,17 @@ public class BookingRestService {
                          @QueryParam("subject") String subject,
                          @QueryParam("description") String description,
                          @QueryParam("startDate") long startDate,
-                         @QueryParam("endDate") long endDate) {
+                         @QueryParam("endDate") long endDate,
+                         @QueryParam("email") String email) {
 
         if (isEmptyOrNull(subject)) {
             return Response.status(Response.Status.PARTIAL_CONTENT).build();
-        }
-
-        if (!auth.isAuthenticated(jwt)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         Date start = new Date(startDate);
         Date end = new Date(endDate);
 
         Booking booking = new Booking(subject, description, start, end);
-        String email = auth.getEmail(jwt);
 
         Result result = bookingService.book(booking, email);
 

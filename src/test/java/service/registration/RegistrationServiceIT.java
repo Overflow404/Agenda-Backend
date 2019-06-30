@@ -1,27 +1,24 @@
-/*
 package service.registration;
 
 import config.Configuration;
+import dao.Dao;
 import model.User;
-import org.apache.http.HttpStatus;
 import org.junit.*;
-import utils.TestUtils;
+import service.Helper;
+import service.Result;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.ws.rs.core.Response;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static utils.TestUtils.RANDOM_GROUP;
+import static org.hamcrest.core.Is.is;
+import static service.Helper.*;
 
 public class RegistrationServiceIT {
 
+    private static Dao dao;
+    private static EntityManager manager;
+    private static RegistrationService rService;
     private static EntityManagerFactory entityManagerFactory;
-
-    private EntityManager manager;
-    private RegistrationService registrationService;
-    private TestUtils utils = new TestUtils();
 
     @BeforeClass
     public static void setupClass() {
@@ -31,81 +28,61 @@ public class RegistrationServiceIT {
     @Before
     public void setup() {
         manager = entityManagerFactory.createEntityManager();
-        registrationService = new RegistrationService();
-        registrationService.manager = manager;
+        Helper helper = new Helper();
+        dao = new Dao(manager);
 
-        utils.deleteTables(manager);
+        rService = new RegistrationService(dao);
+        dao.start();
+        helper.deleteTables(manager, dao);
     }
 
     @After
-    public void teardown() {
+    public void tearDown() {
+        dao.commit();
         manager.close();
     }
 
     @AfterClass
-    public static void teardownClass() {
+    public static void tearDownClass() {
         entityManagerFactory.close();
     }
 
     @Test
-    public void registerAnOwnerUser() {
-        User user = new User("test", "test", "test", "test",
-                "test", RANDOM_GROUP, true);
+    public void attemptToOwnAnotherGroup() {
+        rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true));
+        Result result = rService.register(new User(testFirstName, testLastName, testGmt, "newEmail", testPassword, testGroup, true));
 
-        registrationService.register(user);
-
-        User expected = utils.findUserByCalendarAndEmail(RANDOM_GROUP, "test", manager);
-
-        Assert.assertThat(expected, is(notNullValue()));
+        Assert.assertThat(result.success(), is(false));
     }
 
     @Test
-    public void registerUserToUnknownGroup() {
-        User user = new User("test", "test", "test", "test",
-                "test", "inexistent", false);
+    public void successfulOwnerRegistration() {
+        Result result = rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true));
 
-        Response response = registrationService.register(user);
-
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_NOT_FOUND));
-
+        Assert.assertThat(result.success(), is(true));
     }
 
     @Test
-    public void registerUserToKnownGroup() {
-        User owner = new User("test", "test", "test", "test1",
-                "test", RANDOM_GROUP, true);
+    public void alreadyRegisteredOwner() {
+        rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true));
+        Result result =rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true));
 
-        manager.getTransaction().begin();
-        registrationService.register(owner);
-
-        User user = new User("test", "test", "test", "test2",
-                "test", RANDOM_GROUP, false);
-
-        registrationService.register(user);
-        manager.getTransaction().commit();
-
-        User expected = utils.findUserByCalendarAndEmail(RANDOM_GROUP, "test2", manager);
-
-        Assert.assertThat(expected.getGroupName(), is(RANDOM_GROUP));
-        Assert.assertThat(expected.getCalendar(), is(user.getCalendar()));
-        Assert.assertThat(expected.isOwner(), is(false));
+        Assert.assertThat(result.success(), is(false));
     }
 
+    @Test
+    public void registerNonOwnerToInexistentGroup() {
+        Result result = rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, false));
+
+        Assert.assertThat(result.success(), is(false));
+    }
 
     @Test
-    public void registerAnAlreadyRegisteredOwnerUser() {
-        User owner = new User("test", "test", "test", "test1",
-                "test", RANDOM_GROUP, true);
+    public void registerNonOwnerToExistentGroup() {
+        rService.register(testOwnerUser);
+        Result result = rService.register(new User(testFirstName, testLastName, testGmt, "newEmail", testPassword, testGroup, false));
 
-        manager.getTransaction().begin();
-        registrationService.register(owner);
-        manager.flush();
-        manager.clear();
-        Response response = registrationService.register(owner);
-        manager.getTransaction().commit();
-
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_CONFLICT));
+        Assert.assertThat(result.success(), is(true));
     }
 
 }
-*/

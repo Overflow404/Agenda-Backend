@@ -11,7 +11,15 @@ import java.util.List;
 public class RetrieveBookingsService {
 
     @EJB
-    Dao dao;
+    private Dao dao;
+
+    RetrieveBookingsService(Dao dao) {
+        this.dao = dao;
+    }
+
+    public RetrieveBookingsService() {
+
+    }
 
     public Result retrieve(int day, int month, int year, String email) {
         List<Booking> bookings = dao.retrieveBookingsFrom(day, month, year, email);

@@ -1,6 +1,5 @@
 package restful.overlapping;
 
-import service.auth.AuthService;
 import service.Result;
 import service.overlapping.OverlappingService;
 import javax.ejb.EJB;
@@ -14,8 +13,6 @@ import static config.Configuration.ROOT_PATH;
 
 @Path(ROOT_PATH)
 public class OverlappingRestService {
-
-    private static AuthService auth = new AuthService();
 
     @EJB
     private OverlappingService overlappingService;
@@ -33,10 +30,6 @@ public class OverlappingRestService {
 
         if (endTimeIsGreaterThanStartTime(start, end)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        if (!auth.isAuthenticated(jwt)) {
-            Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         Result result = overlappingService.checkIfDatesOverlap(start, end, group);

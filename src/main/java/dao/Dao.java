@@ -8,10 +8,7 @@ import service.Result;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +25,14 @@ public class Dao {
 
     @PersistenceContext(unitName = Configuration.UNIT)
     EntityManager manager;
+
+    public Dao(EntityManager manager) {
+        this.manager = manager;
+    }
+
+    public Dao() {
+
+    }
 
     public User getUserByMail(String email) {
         return manager
@@ -106,5 +111,21 @@ public class Dao {
             return Optional.empty();
         }
 
+    }
+
+    public void start() {
+        manager.getTransaction().begin();
+    }
+
+    public void commit() {
+        manager.getTransaction().commit();
+    }
+
+    public void flush() {
+        manager.flush();
+    }
+
+    public void clear() {
+        manager.clear();
     }
 }

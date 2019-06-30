@@ -11,13 +11,21 @@ import javax.ejb.Stateless;
 public class RegistrationService {
 
     @EJB
-    Dao dao;
+    private Dao dao;
+
+    public RegistrationService(Dao dao) {
+        this.dao = dao;
+    }
+
+    public RegistrationService() {
+
+    }
 
     public Result register(User user) {
 
         String group = user.getGroupName();
 
-        if (groupOwner(user) && dao.groupExist(group)) {
+        if (attemptToOwnAnotherGroup(user, group)) {
             return Result.failure("Attempting to own another group!");
         }
 
@@ -35,6 +43,10 @@ public class RegistrationService {
         calendar.addUser(user);
 
         return Result.success("Registration successful!");
+    }
+
+    private boolean attemptToOwnAnotherGroup(User user, String group) {
+        return groupOwner(user) && dao.groupExist(group);
     }
 
 

@@ -1,7 +1,6 @@
 package restful.registration;
 
 import model.User;
-import service.auth.AuthService;
 import service.Result;
 import service.registration.RegistrationService;
 import javax.ejb.EJB;
@@ -14,8 +13,6 @@ import static config.Configuration.*;
 @Path(ROOT_PATH)
 public class RegistrationRestService {
 
-    private static AuthService auth = new AuthService();
-
     @EJB
     private RegistrationService registrationService;
 
@@ -26,11 +23,7 @@ public class RegistrationRestService {
     public Response register(@HeaderParam("Authorization") String jwt, User user) {
 
         if (userIsNull(user) || userIsEmpty(user)) {
-            Response.status(Response.Status.PARTIAL_CONTENT).build();
-        }
-
-        if (auth.isAuthenticated(jwt)) {
-            Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.PARTIAL_CONTENT).build();
         }
 
         Result result = registrationService.register(user);
@@ -47,12 +40,12 @@ public class RegistrationRestService {
     private boolean userIsNull(User user) {
         return user == null || user.getFirstName() == null || user.getLastName() == null
                 || user.getEmail() == null || user.getPassword() == null
-                || user.getGmt() == null;
+                || user.getGmt() == null || user.getGroupName() == null;
     }
 
     private boolean userIsEmpty(User user) {
         return user.getFirstName().isBlank() || user.getLastName().isBlank()
                 || user.getEmail().isBlank() || user.getPassword().isBlank()
-                || user.getGmt().isBlank();
+                || user.getGmt().isBlank() || user.getGroupName().isBlank();
     }
 }
