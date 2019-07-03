@@ -38,8 +38,8 @@ public class OverlappingServiceIT {
 
         dao.start();
         helper.deleteTables(manager, dao);
-        helper.registerSampleUser(dao);
-        helper.insertSampleSlot(dao, oService);
+        helper.registerTestUser(dao);
+        helper.insertTestBooking(dao, oService);
     }
 
 

@@ -1,5 +1,7 @@
 package restful.overlapping;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import service.overlapping.OverlappingService;
 import javax.ejb.EJB;
@@ -13,6 +15,9 @@ import static config.Configuration.ROOT_PATH;
 
 @Path(ROOT_PATH)
 public class OverlappingRestService {
+
+    private final static Logger logger = LoggerFactory.getLogger(OverlappingRestService.class);
+
 
     @EJB
     private OverlappingService overlappingService;

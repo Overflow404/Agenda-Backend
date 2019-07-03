@@ -1,6 +1,8 @@
 package restful.booking;
 
 import model.Booking;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import service.booking.BookingService;
 import javax.ejb.EJB;
@@ -14,6 +16,9 @@ import static config.Configuration.ROOT_PATH;
 
 @Path(ROOT_PATH)
 public class BookingRestService {
+
+    private final static Logger logger = LoggerFactory.getLogger(BookingRestService.class);
+
 
     @EJB
     private BookingService bookingService;

@@ -71,6 +71,14 @@ public class RegistrationServiceIT {
     }
 
     @Test
+    public void alreadyRegisteredNonOwner() {
+        rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, false));
+        Result result = rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, false));
+
+        Assert.assertThat(result.success(), is(false));
+    }
+
+    @Test
     public void registerNonOwnerToInexistentGroup() {
         Result result = rService.register(new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, false));
 

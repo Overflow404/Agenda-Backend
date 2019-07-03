@@ -8,6 +8,9 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
@@ -16,6 +19,8 @@ import static config.Configuration.JWT_KEY;
 import static config.Configuration.SESSION_TIME;
 
 public class AuthService {
+
+    private final static Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     private static Base64.Decoder decoder = Base64.getUrlDecoder();
     private final String BEARER = "Bearer ";

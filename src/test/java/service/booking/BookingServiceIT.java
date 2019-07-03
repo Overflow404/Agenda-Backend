@@ -36,8 +36,8 @@ public class BookingServiceIT {
 
         dao.start();
         helper.deleteTables(manager, dao);
-        helper.registerSampleUser(dao);
-        helper.insertSampleSlot(dao, oService);
+        helper.registerTestUser(dao);
+        helper.insertTestBooking(dao, oService);
     }
 
     @After
@@ -145,7 +145,6 @@ public class BookingServiceIT {
         bService.book(booking, testEmail);
 
         Assert.assertNotSame(helper.getBooking(booking, manager), is(booking));
-
     }
 
     @Test

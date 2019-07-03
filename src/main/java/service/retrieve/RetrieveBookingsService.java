@@ -2,6 +2,8 @@ package service.retrieve;
 
 import dao.Dao;
 import model.Booking;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -9,6 +11,9 @@ import java.util.List;
 
 @Stateless
 public class RetrieveBookingsService {
+
+    private final static Logger logger = LoggerFactory.getLogger(RetrieveBookingsService.class);
+
 
     @EJB
     private Dao dao;

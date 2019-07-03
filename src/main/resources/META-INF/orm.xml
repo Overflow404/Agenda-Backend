@@ -57,5 +57,13 @@
         <query>SELECT u FROM User u WHERE u.email=:email</query>
     </named-query>
 
+    <named-query name="remove">
+        <query>DELETE FROM Pending p WHERE p.waiterMail =: email</query>
+    </named-query>
+
+    <named-query name="getPendingList">
+        <query>SELECT p FROM User u JOIN Pending p on p.ownerUser = u WHERE u.email = :email and u.owner=true</query>
+    </named-query>
+
 </entity-mappings>
 

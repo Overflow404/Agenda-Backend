@@ -2,6 +2,9 @@ package model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -11,6 +14,8 @@ import java.util.Date;
 @XmlRootElement(name = "booking")
 @Getter @Setter
 public class Booking {
+
+    private final static Logger logger = LoggerFactory.getLogger(Booking.class);
 
     public static final String OVERLAPPING = "overlapping";
     public static final String GET_BOOKING_FROM_CALENDAR_AND_DATE = "getFromDay";

@@ -98,13 +98,6 @@ public class RegistrationRestServiceTest {
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_PARTIAL_CONTENT));
     }
 
-    @Test
-    public void nullGroup() {
-        User user = new User("test", "test","test","test","test",null,true);
-        Response response = restService.register("test", user);
-
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_PARTIAL_CONTENT));
-    }
 
     @Test
     public void emptyUsername() {
@@ -146,11 +139,4 @@ public class RegistrationRestServiceTest {
         Assert.assertThat(response.getStatus(), is(HttpStatus.SC_PARTIAL_CONTENT));
     }
 
-    @Test
-    public void emptyGroup() {
-        User user = new User("test", "test","test","test","test"," ",true);
-        Response response = restService.register("test", user);
-
-        Assert.assertThat(response.getStatus(), is(HttpStatus.SC_PARTIAL_CONTENT));
-    }
 }

@@ -1,5 +1,7 @@
 package restful;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import service.auth.AuthService;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -15,6 +17,9 @@ import static config.Configuration.*;
 @Provider
 public class RequestAuthFilter implements ContainerRequestFilter {
 
+    private final static Logger logger = LoggerFactory.getLogger(RequestAuthFilter.class);
+
+
     private AuthService auth = new AuthService();
 
     @Context
@@ -25,7 +30,7 @@ public class RequestAuthFilter implements ContainerRequestFilter {
         String path = info.getPath();
         if (isNotARegisterOrLoginOperation(path)) {
             Result result = Result.failure("Not authenticated!");
-            Response response = Response.status(Response.Status.PRECONDITION_FAILED)
+            Response response = Response.status(Response.Status.UNAUTHORIZED)
                     .entity(result.getFailureReason())
                     .build();
 

@@ -51,24 +51,34 @@ public class Helper {
         return 1L;
     }
 
+    public static User getNewOwnerUser() {
+        return new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true);
+    }
+
+    public static User getNewNonOwnerUser() {
+        return new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, false);
+    }
+
     public void deleteTables(EntityManager manager, Dao dao) {
         Query deleteBookings = manager.createQuery("DELETE FROM Booking");
+        Query deletePendings = manager.createQuery("DELETE FROM Pending");
         Query deleteUsers = manager.createQuery("DELETE FROM User");
         Query deleteCalendar = manager.createQuery("DELETE FROM Calendar");
 
+        deletePendings.executeUpdate();
         deleteBookings.executeUpdate();
         deleteUsers.executeUpdate();
         deleteCalendar.executeUpdate();
     }
 
-    public void insertSampleSlot(Dao dao, OverlappingService oService) {
+    public void insertTestBooking(Dao dao, OverlappingService oService) {
         BookingService bService = new BookingService(oService, dao);
         Booking booking = new Booking(testSubject, testDescription, testStart, testEnd);
         bService.book(booking, testEmail);
     }
 
 
-    public void registerSampleUser(Dao dao) {
+    public void registerTestUser(Dao dao) {
         RegistrationService registrationService = new RegistrationService(dao);
         User user = new User(testFirstName, testLastName, testGmt, testEmail, testPassword, testGroup, true);
         registrationService.register(user);

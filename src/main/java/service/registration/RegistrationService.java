@@ -3,12 +3,16 @@ package service.registration;
 import dao.Dao;
 import model.Calendar;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 @Stateless
 public class RegistrationService {
+
+    private final static Logger logger = LoggerFactory.getLogger(RegistrationService.class);
 
     @EJB
     private Dao dao;
@@ -22,27 +26,21 @@ public class RegistrationService {
     }
 
     public Result register(User user) {
-
         String group = user.getGroupName();
-
         if (attemptToOwnAnotherGroup(user, group)) {
+            logger.info("Attempting to own another group!");
             return Result.failure("Attempting to own another group!");
         }
-
         if (groupOwner(user)) {
-            Calendar calendar = new Calendar(group);
-            calendar.addUser(user);
-            return dao.persistCalendar(calendar);
+            return dao.persistToNewCalendar(group, user);
         }
 
         if (!dao.groupExist(group)) {
+            logger.info("Group not found!");
             return Result.failure("Group not found!");
         }
 
-        Calendar calendar = dao.retrieveCalendar(group);
-        calendar.addUser(user);
-
-        return Result.success("Registration successful!");
+        return dao.persistToAlreadyCalendar(group, user);
     }
 
     private boolean attemptToOwnAnotherGroup(User user, String group) {

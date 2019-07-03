@@ -35,7 +35,7 @@ public class RegistrationServiceTest {
     @Test
     public void successfulOwnerRegistration() {
         when(dao.groupExist(testGroup)).thenReturn(false);
-        when(dao.persistCalendar(any())).thenReturn(successResult);
+        when(dao.persistToNewCalendar(any(), any())).thenReturn(successResult);
 
         Result result = rService.register(testOwnerUser);
 
@@ -45,9 +45,19 @@ public class RegistrationServiceTest {
     @Test
     public void alreadyRegisteredOwner() {
         when(dao.groupExist(testGroup)).thenReturn(false);
-        when(dao.persistCalendar(any())).thenReturn(failureResult);
+        when(dao.persistToNewCalendar(any(), any())).thenReturn(failureResult);
 
         Result result = rService.register(testOwnerUser);
+
+        Assert.assertThat(result.success(), is(false));
+    }
+
+    @Test
+    public void alreadyRegisteredNonOwner() {
+        when(dao.groupExist(testGroup)).thenReturn(false);
+        when(dao.persistToNewCalendar(any(), any())).thenReturn(failureResult);
+
+        Result result = rService.register(testNonOwnerUser);
 
         Assert.assertThat(result.success(), is(false));
     }
@@ -66,10 +76,11 @@ public class RegistrationServiceTest {
         Calendar calendar = new Calendar();
         when(dao.groupExist(testGroup)).thenReturn(true);
         when(dao.retrieveCalendar(testGroup)).thenReturn(calendar);
+        when(dao.persistToAlreadyCalendar(any(), any())).thenReturn(Result.failure("Already registered!"));
 
         Result result = rService.register(testNonOwnerUser);
 
-        Assert.assertThat(result.success(), is(true));
+        Assert.assertThat(result.success(), is(false));
     }
 
 }

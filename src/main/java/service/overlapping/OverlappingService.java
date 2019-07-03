@@ -1,6 +1,8 @@
 package service.overlapping;
 
         import dao.Dao;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
         import service.Result;
         import javax.ejb.EJB;
         import javax.ejb.Stateless;
@@ -8,6 +10,8 @@ package service.overlapping;
 
 @Stateless
 public class OverlappingService {
+
+    private final static Logger logger = LoggerFactory.getLogger(OverlappingService.class);
 
     @EJB
     private Dao dao;

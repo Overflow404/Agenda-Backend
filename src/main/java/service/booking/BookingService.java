@@ -5,12 +5,17 @@ import model.Booking;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import service.overlapping.OverlappingService;
 import java.util.Date;
 
 @Singleton
 public class BookingService {
+
+    private final static Logger logger = LoggerFactory.getLogger(BookingService.class);
+
 
     @EJB
     private OverlappingService oService;

@@ -1,6 +1,8 @@
 package restful.login;
 
 import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.Result;
 import service.login.LoginService;
 import javax.ejb.EJB;
@@ -12,6 +14,9 @@ import static config.Configuration.*;
 
 @Path(ROOT_PATH)
 public class LoginRestService {
+
+    private final static Logger logger = LoggerFactory.getLogger(LoginRestService.class);
+
 
     @EJB
     private LoginService loginService;

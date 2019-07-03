@@ -2,11 +2,17 @@ package service;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @Getter @Setter
 public class Result<T> {
+
+    private final static Logger logger = LoggerFactory.getLogger(Result.class);
+
 
     private ResultType resultType;
     private T content;
